@@ -1,10 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Groq from 'groq-sdk'
 
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY })
-
 export async function POST(req: NextRequest) {
   try {
+    const apiKey = process.env.GROQ_API_KEY
+    if (!apiKey) {
+      return NextResponse.json({ error: 'GROQ_API_KEY is not configured on the server.' }, { status: 500 })
+    }
+
+    const groq = new Groq({ apiKey })
+
     const { text } = await req.json()
     if (!text || text.trim().length < 50) {
       return NextResponse.json({ error: 'Document too short.' }, { status: 400 })
